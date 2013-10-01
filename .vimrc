@@ -7,7 +7,9 @@ nnoremap <silent> <c-o> :NERDTreeToggle<CR>
 set shellslash 
 set grepprg=grep\ -nH\ $*
 let g:tex_flavor='latex'
-
+let g:nerdtree_tabs_open_on_console_startup=1
+let g:nerdtree_tabs_smart_startup_focus=1
+let g:nerdtree_tabs_focus_on_files=1
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""

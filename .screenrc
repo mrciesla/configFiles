@@ -4,3 +4,6 @@ hardstatus alwayslastline
 # Amazon
 hardstatus alwayslastline "%{-b gk}%-w%{+b kg}%50>%n %t%{-b gk}%+w %=%C%<"
 vbell off
+# move left and right with ctrl + arrow
+bindkey ^[[1;5D prev
+bindkey ^[[1;5C next
