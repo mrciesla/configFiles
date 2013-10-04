@@ -33,12 +33,13 @@ struct AsEntry: public Entry{
 };
 
 struct Stats{
-    int depth, goals;
+    int depth, goals, solved;
     unsigned maxSize;
-    Stats(int newDepth, int newGoals, unsigned newMaxSize){
+    Stats(int newDepth, int newGoals, unsigned newMaxSize, int newSolved){
         depth = newDepth;
         goals = newGoals;
         maxSize = newMaxSize;
+        solved = newSolved;
     }
 };
 
@@ -152,7 +153,7 @@ void asSearch(string puzzle, int (hCalc)(string)){
         if(isGoalState(current.str)){
             cout<<"found solution"<<solutions<<endl;
             solutions++;
-            statMap[config].push_back(Stats(current.depth+1, states, maxSize));
+            statMap[config].push_back(Stats(current.depth+1, states, maxSize,1));
             return;
         }
 
@@ -192,7 +193,7 @@ void ids(string puzzle) {
                         if(isGoalState(next)){
                             solutions++;
                             statMap[config].push_back(Stats(current.depth+1, 
-                                        states, maxSize));
+                                        states, maxSize,1));
                             return;
                         }
                         explored->insert(next);
@@ -216,7 +217,7 @@ bool checkNextState(Entry &entry, string &nextState,
         if(isGoalState(nextState)){
             cout<<"found solution"<<solutions<<endl;
             solutions++;
-            statMap[config].push_back(Stats(entry.depth+1, states, maxSize));
+            statMap[config].push_back(Stats(entry.depth+1, states, maxSize,1));
             return true;
         }
         if(explored.count(nextState) == 0){
@@ -265,7 +266,7 @@ void bfs(string &puzzle) {
             if(strcmp(next.c_str(), "") != 0){
                 states++;
                 if(isGoalState(next)){
-                    statMap[config].push_back(Stats(current.depth+1, states, maxSize));
+                    statMap[config].push_back(Stats(current.depth+1, states, maxSize,1));
                     solutions++;
                     return;
                 }
@@ -303,9 +304,14 @@ string hillClimbAux(string &puzzle){
 
 void hillClimb(string &puzzle){
     string best = hillClimbAux(puzzle);
+    int config = getConfig();
+    int solved = 0;
     if(isGoalState(best)){
+        cout<<"Hill climb solved: "<<puzzle<<endl;
         solutions++;
+        solved = 1;
     }
+    statMap[config].push_back(Stats(0, 0, 0, solved));
 }
 
 string generateSecondBest(string best){
@@ -339,6 +345,9 @@ double averageVector(vector<Stats> &stats, char stat){
             case 'm':
                 sum += (double) stats[i].maxSize;
                 break;
+            case 's':
+                sum += (double) stats[i].solved;
+                break;
         }
     }
     return sum/n;
@@ -348,14 +357,14 @@ void printGroup(int group){
     double averageDepth = 0;
     double averageGoalsTested = 0;
     double averageMaxFrontier = 0;
+    double percentSolved = 0;
 
     averageDepth = averageVector(statMap[group], 'd');
     averageGoalsTested = averageVector(statMap[group], 'g');
     averageMaxFrontier = averageVector(statMap[group], 'm');
-
-    printf("%d, %f, %f, %f\n", group, averageDepth, averageGoalsTested, averageMaxFrontier);
-
-
+    percentSolved = averageVector(statMap[group], 's');
+    
+    printf("%d, %f, %f, %f, %f\n", group, averageDepth, averageGoalsTested, averageMaxFrontier, percentSolved);
 }
 
 void printOutput(){
